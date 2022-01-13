@@ -1,6 +1,7 @@
 package service;
 
 import mapper.InvoiceMapper;
+import model.entity.InvoiceEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,7 +16,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class InvoiceServiceTest {
@@ -41,6 +42,19 @@ class InvoiceServiceTest {
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> invoiceService.getInvoice(invalidInvoiceId));
 
         assertThat(exception.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void should_add_invoice_and_send_notification() {
+        String invalidInvoiceId = "invalidInvoiceId";
+        InvoiceEntity invoiceEntity = mock(InvoiceEntity.class);
+
+        doReturn(invoiceEntity).when(mapper).dataToInvoiceEntity("invoiceId", "fiscalId", "customerName", "customerEmail");
+
+        invoiceService.addInvoice("invoiceId", "fiscalId", "customerName", "customerEmail");
+
+        verify(restTemplate).getForEntity("https://bahamas.gov/register?invoice=invoiceId&fiscal_id=fiscalId&name=customerName&email=customerEmail", String.class);
+        verify(repository).save(invoiceEntity);
     }
 
 }

@@ -32,7 +32,6 @@ public class InvoiceService {
 
         restTemplate.getForEntity(urlTemplate, String.class);
         repository.save(invoiceEntity);
-
     }
 
     public Invoice getInvoice(String invoiceId) {
