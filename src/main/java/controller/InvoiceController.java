@@ -1,5 +1,6 @@
 package controller;
 
+import model.Invoice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,14 +16,16 @@ public class InvoiceController {
 
     @PostMapping("/store-bahamas-client/{invoiceId}")
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity saveItem(@PathVariable String invoiceId,
-                                   @RequestParam(name = "fiscal_id") String fiscalId,
-                                   @RequestParam(name = "name") String customerName,
-                                   @RequestParam(name = "email") String customerEmail) {
-
+    public ResponseEntity saveItem(@PathVariable String invoiceId, @RequestParam(name = "fiscal_id") String fiscalId, @RequestParam(name = "name") String customerName, @RequestParam(name = "email") String customerEmail) {
         invoiceService.addInvoice(invoiceId, fiscalId, customerName, customerEmail);
-
         return new ResponseEntity(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/retrieve-bahamas-client/{invoiceId}")
+    @RequestMapping(method = RequestMethod.POST)
+    public ResponseEntity saveItem(@PathVariable String invoiceId) {
+        Invoice invoice = invoiceService.getInvoice(invoiceId);
+        return new ResponseEntity<Invoice>(invoice, HttpStatus.CREATED);
     }
 
 }
